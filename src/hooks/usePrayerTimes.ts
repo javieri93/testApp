@@ -68,13 +68,23 @@ export function usePrayerTimes(
     if (!prayerTimes) return;
 
     const now = new Date();
+    const nowTime = now.getTime();
     const times: PrayerInfo[] = prayerNames
       .filter(p => p.key !== 'sunrise')
-      .map(p => ({
-        ...p,
-        time: prayerTimes[p.key as keyof PrayerTimes] as Date,
-        isPassed: (prayerTimes[p.key as keyof PrayerTimes] as Date) < now,
-      }));
+      .map(p => {
+        const prayerTime = prayerTimes[p.key as keyof PrayerTimes] as Date;
+        const prayerTimeMs = prayerTime.getTime();
+        const diffMinutes = (prayerTimeMs - nowTime) / 60000;
+        const isPassed = prayerTimeMs < nowTime;
+        const isNow = !isPassed && diffMinutes <= 0 && diffMinutes > -30;
+        return {
+          ...p,
+          time: prayerTime,
+          isPassed,
+          isNow,
+          remainingMinutes: Math.floor(Math.abs(diffMinutes)),
+        };
+      });
 
     const currentIndex = times.findIndex(p => !p.isPassed);
     const current = currentIndex >= 0 ? times[currentIndex] : null;
@@ -100,13 +110,23 @@ export function usePrayerTimes(
     if (!prayerTimes) return [];
     
     const now = new Date();
+    const nowTime = now.getTime();
     return prayerNames
       .filter(p => p.key !== 'sunrise')
-      .map(p => ({
-        ...p,
-        time: prayerTimes[p.key as keyof PrayerTimes] as Date,
-        isPassed: (prayerTimes[p.key as keyof PrayerTimes] as Date) < now,
-      }));
+      .map(p => {
+        const prayerTime = prayerTimes[p.key as keyof PrayerTimes] as Date;
+        const prayerTimeMs = prayerTime.getTime();
+        const diffMinutes = (prayerTimeMs - nowTime) / 60000;
+        const isPassed = prayerTimeMs < nowTime;
+        const isNow = !isPassed && diffMinutes <= 0 && diffMinutes > -30;
+        return {
+          ...p,
+          time: prayerTime,
+          isPassed,
+          isNow,
+          remainingMinutes: Math.floor(Math.abs(diffMinutes)),
+        };
+      });
   }, [prayerTimes]);
 
   return {

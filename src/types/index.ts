@@ -33,6 +33,8 @@ export interface PrayerInfo {
   arabicName: string;
   time: Date;
   isPassed: boolean;
+  isNow: boolean;
+  remainingMinutes: number;
 }
 
 export interface AppSettings {
