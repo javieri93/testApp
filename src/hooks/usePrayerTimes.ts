@@ -76,9 +76,10 @@ export function usePrayerTimes(
         isPassed: (prayerTimes[p.key as keyof PrayerTimes] as Date) < now,
       }));
 
-    const current = times.find(p => !p.isPassed);
-    const nextIndex = times.findIndex(p => !p.isPassed);
-    const next = nextIndex < times.length - 1 ? times[nextIndex + 1] : null;
+    const currentIndex = times.findIndex(p => !p.isPassed);
+    const current = currentIndex >= 0 ? times[currentIndex] : null;
+    const nextIndex = currentIndex + 2;
+    const next = nextIndex < times.length ? times[nextIndex] : null;
 
     setCurrentPrayer(current || times[times.length - 1]);
     setNextPrayer(next);
