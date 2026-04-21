@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Moon } from 'lucide-react';
 
 interface HeaderProps {
@@ -6,6 +7,21 @@ interface HeaderProps {
 }
 
 export function Header({ city, country }: HeaderProps) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const timeString = currentTime.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  
   const locationText = city && country ? `${city}, ${country}` : city;
   
   return (
@@ -19,6 +35,9 @@ export function Header({ city, country }: HeaderProps) {
           {locationText}
         </p>
       )}
+      <p className="text-center text-white/90 mt-3 text-2xl font-mono">
+        {timeString}
+      </p>
     </header>
   );
 }
