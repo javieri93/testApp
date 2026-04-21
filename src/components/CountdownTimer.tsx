@@ -19,7 +19,7 @@ export function CountdownTimer({ nextPrayerName, nextPrayerTime, countdown }: Co
   return (
     <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2C5282] rounded-2xl p-6 text-white text-center shadow-xl">
       <p className="text-white/80 text-sm uppercase tracking-wider mb-2">
-        Tiempo restante hasta
+        Waktu menuju
       </p>
       <h2 className="text-3xl font-bold mb-1">{nextPrayerName}</h2>
       <p className="text-2xl text-[#D4A574] mb-4">{nextPrayerTime}</p>

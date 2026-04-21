@@ -21,16 +21,29 @@ function PrayerApp() {
   );
 
   useEffect(() => {
-    if (coordinates && settings.useLocation) {
-      dispatch({ 
-        type: 'SET_LOCATION', 
-        payload: { 
-          coordinates,
-          city: 'Lokasi Saat Ini',
-          country: ''
-        } 
+    if (!coordinates || !settings.useLocation) return;
+
+    dispatch({
+      type: 'SET_LOCATION',
+      payload: { coordinates, city: 'Memuat lokasi...', country: '' }
+    });
+
+    const { latitude, longitude } = coordinates;
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`,
+      { headers: { 'Accept-Language': 'id' } }
+    )
+      .then(res => res.json())
+      .then(data => {
+        const addr = data.address || {};
+        const city =
+          addr.city || addr.town || addr.village || addr.county || addr.state || 'Lokasi Saat Ini';
+        const country = addr.country || '';
+        dispatch({ type: 'SET_LOCATION', payload: { coordinates, city, country } });
+      })
+      .catch(() => {
+        dispatch({ type: 'SET_LOCATION', payload: { coordinates, city: 'Lokasi Saat Ini', country: '' } });
       });
-    }
   }, [coordinates, settings.useLocation, dispatch]);
 
   const handleRequestLocation = useCallback(() => {
@@ -46,6 +59,8 @@ function PrayerApp() {
   }, [dispatch]);
 
   const hasLocation = settings.location?.coordinates || coordinates;
+  const hasCoordinates = !!hasLocation;
+  const displayCity = hasCoordinates ? (settings.location?.city || 'Lokasi Saat Ini') : undefined;
   const nextPrayerTime = nextPrayer 
     ? nextPrayer.time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
     : '--:--';
@@ -53,8 +68,8 @@ function PrayerApp() {
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <Header 
-        city={settings.location?.city} 
-        country={settings.location?.country} 
+        city={displayCity}
+        country={hasCoordinates ? settings.location?.country || '' : undefined}
       />
 
       <main className="max-w-lg mx-auto px-4 py-6 pb-24">
